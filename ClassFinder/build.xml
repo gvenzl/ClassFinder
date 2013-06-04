@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="build" name="ClassFinder">
+	<description>
+		Build ClassFinder
+	</description>
+	<!-- set global properties for this build -->
+	<property name="projectname" value="ClassFinder"/>
+	<property name="version" value="1.0.0"/>
+	<property name="dir.src" location="src"/>
+	<property name="dir.build" location="out"/>
+	<property name="dir.doc" location="doc"/>
+	<property name="dir.javadoc" location="${dir.doc}/javadoc"/>
+	<!-- Class paths -->
+	<property name="JUnitLib" value="C:/Program Files/eclipse juno/plugins/org.junit_4.10.0.v4_10_0_v20120426-0900/junit.jar"/>
+	<property name="test.class.name" value="com.optit.test.AllTest"/>
+
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp/>
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${dir.build}"/>
+	</target>
+
+	<target name="clean" description="clean up" >
+		<!-- Delete the ${dir.build} and ${dist} directory trees -->
+		<delete dir="${dir.build}"/>
+		<delete file="junit*properties"/>
+	</target>
+	
+	<target name="compile" depends="init" description="compile the source code">
+		<!-- Compile the java code from ${dir.src} into ${dir.build} -->
+		<javac srcdir="${dir.src}" destdir="${dir.build}">
+			<classpath>
+				<pathelement location="${JUnitLib}"/>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="unitTest" depends="compile" description="Executes JUnit tests">
+		<junit fork="yes" maxmemory="512m" dir ="${basedir}"
+			haltonfailure="true" haltonerror="true">
+				<jvmarg value="-Xms128m"/>
+				<jvmarg value="-XX:NewSize=120m"/>
+			<test name="${test.class.name}" />
+			<classpath>
+				<pathelement location="${dir.build}"/>
+				<pathelement location="${JUnitLib}"/>
+			</classpath>
+			<formatter type="plain" usefile="false" />
+		</junit>
+	</target>
+
+	<target name="javadoc">
+		<javadoc
+			excludepackagenames="com.optit.test.*,junit.framework.*,com.mysql.jdbc.*,oracle.jdbc.*"
+			access="public"
+			destdir="${dir.javadoc}"
+			author="true"
+			version="true"
+			use="true"
+			windowtitle="org.Super.CSV.API"
+		>
+        	<fileset dir="${dir.src}" defaultexcludes="yes">
+            	<include name="**/*.java"/>
+            	<exclude name="com/optit/test/**/*.java" />
+        	</fileset>
+		</javadoc>
+	</target>	
+
+	<target name="build" depends="clean,compile,unitTest" description="generate the distribution">
+		<!-- Create the distribution directory -->
+	
+		<!-- Put everything in ${dir.build} into the ${projectname}.jar file -->
+		<jar jarfile="${dir.build}/${projectname}.jar" basedir="${dir.build}" excludes="**/*.jar,**/com/oracle/test">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Main-Class" value="com.optit.gui.ClassFinder"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="package" depends="build" description="Package the project">
+		<antcall target="package-bin"/>
+		<antcall target="package-src"/>
+		<tar destfile="${dir.build}/${projectname}-${version}.tar.gz" compression="gzip">
+			<tarfileset dir="${basedir}">
+				<include name="src/**"/>
+				<include name="build/**"/>
+				<exclude name="**/test"/>
+				<include name="doc/**"/>
+				<exclude name=".svn"/>
+				<exclude name="test"/>
+				<exclude name="junit*"/>
+				<include name="ReadMe.txt"/>
+				<include name="${projectname}.properties"/>
+			</tarfileset>
+			<tarfileset dir="${dir.build}">
+				<include name="${projectname}.jar"/>
+			</tarfileset>
+		</tar>
+	</target>
+	
+	<target name="package-bin" description="Package a new distribution">
+		<!-- Package the binary distribution containing the .jar file, libraries, properties file as well as the ReadMe.txt file -->
+		<tar destfile="${dir.build}/${projectname}-${version}-bin.tar.gz" compression="gzip">
+			<tarfileset dir="${basedir}">
+				<include name="ReadMe.txt"/>
+				<include name="${projectname}.properties"/>
+				<include name="run.sh"/>
+				<include name="run.bat"/>
+				<include name="allSqls.sql"/>
+			</tarfileset>
+			<tarfileset dir="${dir.build}">
+				<include name="${projectname}.jar"/>
+			</tarfileset>
+		</tar>
+	</target>
+	
+	<target name="package-src" depends="javadoc" description="Package a source distribution">
+		<!-- Package the source distribution containing just the source files -->
+		<tar destfile="${dir.build}/${projectname}-${version}-src.tar.gz" compression="gzip">
+			<tarfileset dir="${basedir}">
+				<include name="src/**"/>
+				<include name="build/**"/>
+				<exclude name="**/test"/>
+				<include name="doc/**"/>
+				<include name="ReadMe.txt"/>
+				<exclude name=".svn"/>
+				<exclude name="junit*"/>
+			</tarfileset>
+		</tar>
+	</target>
+</project>

@@ -74,7 +74,7 @@
 		<jar jarfile="${dir.build}/${projectname}.jar" basedir="${dir.build}" excludes="**/*.jar,**/com/oracle/test">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
-				<attribute name="Main-Class" value="com.optit.gui.ClassFinder"/>
+				<attribute name="Main-Class" value="com.optit.gui.ClassFinderGui"/>
 			</manifest>
 		</jar>
 	</target>

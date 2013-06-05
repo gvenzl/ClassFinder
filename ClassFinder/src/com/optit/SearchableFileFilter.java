@@ -1,31 +1,23 @@
 package com.optit;
 
 import java.io.File;
-import java.util.LinkedList;
 
 public final class SearchableFileFilter extends javax.swing.filechooser.FileFilter implements java.io.FileFilter
 {
-	LinkedList<String> list;
-	
-	public SearchableFileFilter()
-	{
-		list = new LinkedList<String>();
-		list.add(".jar");
-		list.add(".war");
-		list.add(".ear");
-		list.add(".zip");
-	}
-	
 	@Override
 	public boolean accept(File pathname)
 	{
 		if (pathname.isDirectory())
 			return true;
 		
-		if (list.contains(pathname.getName().
-						substring(pathname.
-									getName().length()-4,
-									pathname.getName().length())))
+		String fileName = pathname.getName();
+		if (fileName.endsWith(".jar")
+			|| fileName.endsWith(".war")
+			|| fileName.endsWith(".ear")
+			|| fileName.endsWith(".zip")
+			|| fileName.endsWith(".rar")
+			|| fileName.endsWith(".class")
+			|| fileName.endsWith(".java"))
 			return true;
 		else
 			return false;
@@ -34,7 +26,7 @@ public final class SearchableFileFilter extends javax.swing.filechooser.FileFilt
 	@Override
 	public String getDescription()
 	{
-		return ".jar, .war, .ear, .zip, directory";
+		return ".jar, .war, .ear, .zip, .class, .java, directory";
 	}
 
 }

@@ -27,6 +27,7 @@ public class ClassFinderGui {
 	private JTextField tfClassName;
 	private JTable resultsTable;
 	private JCheckBox chckbxMatchCase;
+	private JFileChooser fc;
 
 	/**
 	 * Launch the application.
@@ -54,7 +55,8 @@ public class ClassFinderGui {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize()
+	{
 		frame = new JFrame();
 		frame.setBounds(100, 100, 547, 367);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -69,20 +71,17 @@ public class ClassFinderGui {
 		tfClassName = new JTextField();
 		tfClassName.setColumns(10);
 		
+		fc = new JFileChooser();
+		fc.setDialogTitle("Choose file or folder");
+		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		fc.setFileFilter(new SearchableFileFilter());
+		
 		JButton btnBrowse = new JButton("Browse");
 		btnBrowse.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				JFileChooser fc = new JFileChooser();
-				fc.setDialogTitle("Choose file or folder");
-				fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				fc.setFileFilter(new SearchableFileFilter());
-				
-				
-				int returnVal = fc.showOpenDialog(frame);
-
-		        if (returnVal == JFileChooser.APPROVE_OPTION)
+		        if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION)
 		        {
 		        	tfJarFileFolder.setText(fc.getSelectedFile().getAbsolutePath());
 		        }

@@ -13,8 +13,8 @@ import com.optit.logger.CommandLineLogger;
 
 public class ClassFinder
 {
-	static Properties parameters;
-	static LinkedList<File> files = new LinkedList<File>();
+	private Properties parameters;
+	private LinkedList<File> files = new LinkedList<File>();
 	
 	/**
 	 * @param args
@@ -133,10 +133,11 @@ public class ClassFinder
 	{
 		boolean verbose = parameters.getProperty(Parameters.verbose).equals("true");
 
+		// Class name contains some package qualifiers
+		boolean containsPackageQualifier = (parameters.getProperty(Parameters.classname).indexOf(".") != -1); 
 		// Change "." in package names to slashes (e.g. "org.apache.commons" -> "org/apache/commons")
 		String classname = parameters.getProperty(Parameters.classname).replaceAll("\\.", "/");
-		// Class name contains some package qualifiers
-		boolean containsPackageQualifier = (classname.indexOf(".") != -1); 
+
 		
 		// Get file tree of directory
 		buildFileList(new File(parameters.getProperty(Parameters.directory)));
@@ -145,18 +146,18 @@ public class ClassFinder
 		// Loop over all the filtered files
 		while (fileIterator.hasNext())
 		{
-			
-			//TODO: Java source files aren't found!
-			
 			File file = fileIterator.next();
 			
 			if (verbose)
 			{
+				// Use full qualified file name for logging, not the \ replaced one
 				CommandLineLogger.log("Looking at: " + file.getAbsolutePath());
 			}
-			
+
+			String fullFileName = file.getAbsolutePath().replaceAll("\\\\", "/");
+
 			// Direct class files
-			if (file.getAbsolutePath().endsWith(".class"))
+			if (fullFileName.endsWith(".class"))
 			{
 				// IF:
 				// Package qualifier was defined or a part of (e.g. apache.commons.Random -> apache/commons/Random)
@@ -168,9 +169,29 @@ public class ClassFinder
 				// AND
 				// The FILE NAME (note the call to file.getName() rather than getAbsolutePath()) matches --> org.apache.commons.Random.class's file name is Random.class
 				// --> CLASS FOUND!
-				if ((containsPackageQualifier && file.getAbsolutePath().endsWith(classname + ".class"))
+				if ((containsPackageQualifier && fullFileName.endsWith(classname + ".class"))
 					||
 					(!containsPackageQualifier && file.getName().equals(classname + ".class")))
+				{
+					CommandLineLogger.log("Class \"" + classname + "\" found at: " + file.getAbsolutePath());
+				}
+			}
+			// Direct java source file
+			else if (fullFileName.endsWith(".java"))
+			{
+				// IF:
+				// Package qualifier was defined or a part of (e.g. apache.commons.Random -> apache/commons/Random)
+				// AND
+				// The file name ends with that qualifier --> org.apache.commons.Random.java ends with "apache/commons/Random.java)
+				// --> CLASS FOUND!
+				// OR
+				// Package qualifier wasn't specified but just the class (e.g. Random)
+				// AND
+				// The FILE NAME (note the call to file.getName() rather than getAbsolutePath()) matches --> org.apache.commons.Random.java's file name is Random.java
+				// --> CLASS FOUND!
+				if ((containsPackageQualifier && fullFileName.endsWith(classname + ".java"))
+					||
+					(!containsPackageQualifier && file.getName().equals(classname + ".java")))
 				{
 					CommandLineLogger.log("Class \"" + classname + "\" found at: " + file.getAbsolutePath());
 				}
@@ -214,7 +235,7 @@ public class ClassFinder
 				{
 					if (verbose)
 					{
-						CommandLineLogger.log("Error reading file " + file.getAbsolutePath() + ": " + e.getMessage());
+						CommandLineLogger.log("Error reading file " + fullFileName + ": " + e.getMessage());
 						CommandLineLogger.logErr(e.getMessage());
 					}
 				}

@@ -19,6 +19,11 @@ public class CommandLineLogger implements Logger
 		verboseFlag = verbose;
 	}
 	
+	public boolean getVerbose()
+	{
+		return verboseFlag;
+	}
+	
 	/**
 	 * Logs one line into the standard output
 	 * @param line The line to log

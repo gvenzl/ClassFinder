@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -17,11 +18,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.UIManager;
 
 import com.optit.ClassFinder;
 import com.optit.Parameters;
 import com.optit.SearchableFileFilter;
-import com.optit.logger.TableLogger;
+import com.optit.logger.GuiLogger;
 
 public class ClassFinderGui {
 
@@ -32,21 +34,45 @@ public class ClassFinderGui {
 	private JFileChooser fc;
 	private ClassFinderTableModel tm;
 	private JTable resultsTable;
+	private JLabel statusBar;
 
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ClassFinderGui window = new ClassFinderGui();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+	public static void main(String[] args)
+	{
+		try
+		{
+			// Set system look and feel (Windows / Unix, etc.)
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e)
+		{
+			// If System look and feel failed, set the CrossPlatform UI look and feel
+			try
+			{
+				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			} catch (Exception e1)
+			{
+				e1.printStackTrace();
 			}
-		});
+		}
+			EventQueue.invokeLater(
+					new Runnable()
+					{
+						public void run()
+						{
+							try
+							{
+								ClassFinderGui window = new ClassFinderGui();
+								window.frame.setVisible(true);
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+					});
 	}
 
 	/**
@@ -62,8 +88,9 @@ public class ClassFinderGui {
 	private void initialize()
 	{
 		frame = new JFrame();
-		frame.setBounds(100, 100, 547, 367);
+		frame.setBounds(100, 100, 547, 377);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setTitle("ClassFinder");
 		
 		JLabel lblJarFile = new JLabel("Jar file / Folder:");
 		
@@ -116,9 +143,20 @@ public class ClassFinderGui {
 				else
 				{
 					tm.removeAllRows();
-					ClassFinder finder = new ClassFinder(new TableLogger(tm));
-					finder.parseArguments(new String[] {Parameters.directory, tfJarFileFolder.getText(), Parameters.classname, tfClassName.getText(), (chckbxMatchCase.isSelected() ? Parameters.matchCase : null)});
-					finder.findClass();
+
+					ArrayList<String> params = new ArrayList<String>();
+					params.add(Parameters.directory);
+					params.add(tfJarFileFolder.getText());
+					params.add(Parameters.classname);
+					params.add(tfClassName.getText());
+					params.add(Parameters.verbose);
+					if (chckbxMatchCase.isSelected())
+					{
+						params.add(Parameters.matchCase);
+					}
+					ClassFinder finder = new ClassFinder(new GuiLogger(tm, statusBar));
+					if (finder.parseArguments(params.toArray(new String[] {})))
+						new Thread(finder).start();
 				}
 			}
 		});
@@ -146,29 +184,33 @@ public class ClassFinderGui {
 		
 		JScrollPane scrollPane = new JScrollPane(resultsTable);
 		
+		statusBar = new JLabel("Ready");
+		
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblJarFile)
-								.addComponent(lblClassName)
-								.addComponent(lblMatchCase))
-							.addGap(18)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-										.addComponent(tfClassName)
-										.addComponent(tfJarFileFolder, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
-									.addGap(18)
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-										.addComponent(btnSearch, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(btnBrowse, GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)))
-								.addComponent(chckbxMatchCase)))
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 516, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE)
+							.addGroup(groupLayout.createSequentialGroup()
+								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+									.addComponent(lblJarFile)
+									.addComponent(lblClassName)
+									.addComponent(lblMatchCase))
+								.addGap(18)
+								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+									.addGroup(groupLayout.createSequentialGroup()
+										.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+											.addComponent(tfClassName)
+											.addComponent(tfJarFileFolder, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
+										.addGap(18)
+										.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+											.addComponent(btnSearch, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+											.addComponent(btnBrowse, GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)))
+									.addComponent(chckbxMatchCase))))
+						.addComponent(statusBar))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
@@ -189,8 +231,10 @@ public class ClassFinderGui {
 						.addComponent(chckbxMatchCase)
 						.addComponent(lblMatchCase))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 221, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(statusBar)
+					.addContainerGap(19, Short.MAX_VALUE))
 		);
 		frame.getContentPane().setLayout(groupLayout);
 	}

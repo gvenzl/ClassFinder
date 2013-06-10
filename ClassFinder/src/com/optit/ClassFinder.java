@@ -12,7 +12,7 @@ import java.util.jar.JarFile;
 import com.optit.logger.CommandLineLogger;
 import com.optit.logger.Logger;
 
-public class ClassFinder
+public class ClassFinder implements Runnable
 {
 	private Properties parameters;
 	private LinkedList<File> files = new LinkedList<File>();
@@ -41,6 +41,11 @@ public class ClassFinder
 			System.exit(0);
 		}
 		finder.findClass();
+	}
+	
+	public void run()
+	{
+		findClass();
 	}
 	
 	/**
@@ -143,12 +148,19 @@ public class ClassFinder
 	// Find the class
 	public void findClass()
 	{
-		boolean verbose = parameters.getProperty(Parameters.verbose).equals("true");
+		logger.setVerbose(parameters.getProperty(Parameters.verbose).equals("true"));
+		boolean matchCase = (parameters.getProperty(Parameters.matchCase).equals("true"));
 
 		// Class name contains some package qualifiers
 		boolean containsPackageQualifier = (parameters.getProperty(Parameters.classname).indexOf(".") != -1); 
 		// Change "." in package names to slashes (e.g. "org.apache.commons" -> "org/apache/commons")
 		String classname = parameters.getProperty(Parameters.classname).replaceAll("\\.", "/");
+		
+		// Not case sensitive
+		if (!matchCase)
+		{
+			classname = classname.toLowerCase();
+		}
 
 		
 		// Get file tree of directory
@@ -160,13 +172,17 @@ public class ClassFinder
 		{
 			File file = fileIterator.next();
 			
-			if (verbose && logger instanceof CommandLineLogger)
-			{
-				// Use full qualified file name for logging, not the \ replaced one
-				logger.log("Looking at: " + file.getAbsolutePath());
-			}
-
+			// Use full qualified file name for logging, not the \ replaced one
+			logger.logVerbose("Looking at: " + file.getAbsolutePath());
+			
 			String fullFileName = file.getAbsolutePath().replaceAll("\\\\", "/");
+			String fileName = file.getName();
+			
+			if (!matchCase)
+			{
+				fullFileName = fullFileName.toLowerCase();
+				fileName = fileName.toLowerCase();
+			}
 
 			// Direct class files
 			if (fullFileName.endsWith(".class"))
@@ -183,9 +199,9 @@ public class ClassFinder
 				// --> CLASS FOUND!
 				if ((containsPackageQualifier && fullFileName.endsWith(classname + ".class"))
 					||
-					(!containsPackageQualifier && file.getName().equals(classname + ".class")))
+					(!containsPackageQualifier && fileName.equals(classname + ".class")))
 				{
-					logger.log(classname, null, file.getAbsolutePath());
+					logger.log(file.getName(), null, file.getAbsolutePath());
 				}
 			}
 			// Direct java source file
@@ -203,9 +219,9 @@ public class ClassFinder
 				// --> CLASS FOUND!
 				if ((containsPackageQualifier && fullFileName.endsWith(classname + ".java"))
 					||
-					(!containsPackageQualifier && file.getName().equals(classname + ".java")))
+					(!containsPackageQualifier && fileName.equals(classname + ".java")))
 				{
-					logger.log(classname, null, file.getAbsolutePath());
+					logger.log(file.getName(), null, file.getAbsolutePath());
 				}
 			}
 			// The rest of the files: jar, war, ear, zip, rar
@@ -217,12 +233,17 @@ public class ClassFinder
 					while(entries.hasMoreElements())
 					{
 						JarEntry entry = (JarEntry) entries.nextElement();
+						String entryName = entry.getName();
+						if (!matchCase)
+						{
+							entryName = entryName.toLowerCase();
+						}
 						
 						if (containsPackageQualifier)
 						{
-							if (entry.getName().endsWith(classname + ".class") || entry.getName().endsWith(classname + ".java"))
+							if (entryName.endsWith(classname + ".class") || entryName.endsWith(classname + ".java"))
 							{
-								logger.log(classname, file.getAbsolutePath(), entry.getName());
+								logger.log(entry.getName(), file.getAbsolutePath(), entry.getName());
 							}
 						}
 						// No package qualified, just Class Name
@@ -234,25 +255,24 @@ public class ClassFinder
 							// OR
 							// In the case that the class doesn't belong to any package or it was just a ZIPPED file of a .class
 							// The file name equals classname.class or classname.java (e.g. Random.java got zipped up into Random.zip. The only thing in there is Random.java and as no package qualifier was given, the class is found)
-							if (entry.getName().endsWith("/" + classname + ".class") || entry.getName().endsWith("/" + classname + ".java")
+							if (entryName.endsWith("/" + classname + ".class") || entryName.endsWith("/" + classname + ".java")
 								|| 
-								entry.getName().equals(classname + ".class") || entry.getName().equals(classname + ".java"))
+								entryName.equals(classname + ".class") || entryName.equals(classname + ".java"))
 							{
-								logger.log(classname, file.getAbsolutePath(), entry.getName());
+								logger.log(entry.getName(), file.getAbsolutePath(), entry.getName());
 							}
 						}
 					}
 				}
 				catch (IOException e)
 				{
-					if (verbose)
-					{
-						logger.log("Error reading file " + fullFileName + ": " + e.getMessage());
-						logger.logErr(e.getMessage());
-					}
+					logger.logVerbose("Error reading file " + fullFileName + ": " + e.getMessage());
+					logger.logErr(e.getMessage());
 				}
 			}
 		}
+		
+		logger.logVerbose("Finished search");
 	}
 	
 	public void buildFileList(File directory)
@@ -262,7 +282,7 @@ public class ClassFinder
 			logger.log("Directory \"" + directory.getAbsolutePath() + "\" does not exist!");
 		}
 		
-		// File is directly passed on, no directory serach necessary
+		// File is directly passed on, no directory search necessary
 		if (!directory.isDirectory() && new SearchableFileFilter().accept(directory))
 		{
 			files.add(directory);

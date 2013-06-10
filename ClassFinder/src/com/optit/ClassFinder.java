@@ -10,11 +10,23 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import com.optit.logger.CommandLineLogger;
+import com.optit.logger.Logger;
 
 public class ClassFinder
 {
 	private Properties parameters;
 	private LinkedList<File> files = new LinkedList<File>();
+	private Logger logger;
+	
+	public ClassFinder()
+	{
+		logger = new CommandLineLogger();
+	}
+	
+	public ClassFinder(Logger logger)
+	{
+		this.logger = logger;
+	}
 	
 	/**
 	 * @param args
@@ -25,7 +37,7 @@ public class ClassFinder
 		if (!finder.parseArguments(args))
 		{
 			// Parsing of arguments was not successful, print help and exit
-			printHelp();
+			new ClassFinder().printHelp();
 			System.exit(0);
 		}
 		finder.findClass();
@@ -85,8 +97,8 @@ public class ClassFinder
 					}
 					default:
 					{
-						CommandLineLogger.log("Unknown parameter: " + args[i]);
-						CommandLineLogger.log();
+						logger.log("Unknown parameter: " + args[i]);
+						logger.log();
 						return false;
 					}
 				}
@@ -98,32 +110,32 @@ public class ClassFinder
 	/**
 	 * Print usage help into stdout and Exit
 	 */
-	public static void printHelp()
+	public void printHelp()
 	{
-		CommandLineLogger.log("Usage: java -jar ClassFinder.jar|com.optit.ClassFinder -d [directory] -c [classname] -m -verbose -help|-h|--help|-?");
-        CommandLineLogger.log("");
-        CommandLineLogger.log("[-d]			The directory to search in");
-        CommandLineLogger.log("[-c]			The classname to search for");
-        CommandLineLogger.log("[-m]			Match case");
-        CommandLineLogger.log("[-verbose]			Enables verbose output");
-        CommandLineLogger.log("[-help|--help|-h|-?]	Display this help");
-        CommandLineLogger.log();
-        CommandLineLogger.log("The directory specified will be searched recursviely.");
-        CommandLineLogger.log("The class name can either just be the class name (e.g. String) or the fully qualified one (e.g. java.lang.String)");
-        CommandLineLogger.log();
-        CommandLineLogger.log("Good hunting!");
+		logger.log("Usage: java -jar ClassFinder.jar|com.optit.ClassFinder -d [directory] -c [classname] -m -verbose -help|-h|--help|-?");
+        logger.log("");
+        logger.log("[-d]			The directory to search in");
+        logger.log("[-c]			The classname to search for");
+        logger.log("[-m]			Match case");
+        logger.log("[-verbose]			Enables verbose output");
+        logger.log("[-help|--help|-h|-?]	Display this help");
+        logger.log();
+        logger.log("The directory specified will be searched recursviely.");
+        logger.log("The class name can either just be the class name (e.g. String) or the fully qualified one (e.g. java.lang.String)");
+        logger.log();
+        logger.log("Good hunting!");
 	}
 	
 	/**
 	 * This function sits on the top level and catches all exceptions and prints out proper error messages 
 	 * @param e The exception that comes from somewhere within the code
 	 */
-	public static void handleExceptions(Exception e)
+	public void handleExceptions(Exception e)
 	{
-		CommandLineLogger.log("Application error: " + e.getMessage());
+		logger.log("Application error: " + e.getMessage());
 		if (e.getCause() != null)
 		{
-			CommandLineLogger.log("Caused by: " + e.getCause().toString());
+			logger.log("Caused by: " + e.getCause().toString());
 		}
 		e.printStackTrace(System.err);
 	}
@@ -148,10 +160,10 @@ public class ClassFinder
 		{
 			File file = fileIterator.next();
 			
-			if (verbose)
+			if (verbose && logger instanceof CommandLineLogger)
 			{
 				// Use full qualified file name for logging, not the \ replaced one
-				CommandLineLogger.log("Looking at: " + file.getAbsolutePath());
+				logger.log("Looking at: " + file.getAbsolutePath());
 			}
 
 			String fullFileName = file.getAbsolutePath().replaceAll("\\\\", "/");
@@ -173,7 +185,7 @@ public class ClassFinder
 					||
 					(!containsPackageQualifier && file.getName().equals(classname + ".class")))
 				{
-					CommandLineLogger.log("Class \"" + classname + "\" found at: " + file.getAbsolutePath());
+					logger.log(classname, null, file.getAbsolutePath());
 				}
 			}
 			// Direct java source file
@@ -193,7 +205,7 @@ public class ClassFinder
 					||
 					(!containsPackageQualifier && file.getName().equals(classname + ".java")))
 				{
-					CommandLineLogger.log("Class \"" + classname + "\" found at: " + file.getAbsolutePath());
+					logger.log(classname, null, file.getAbsolutePath());
 				}
 			}
 			// The rest of the files: jar, war, ear, zip, rar
@@ -210,7 +222,7 @@ public class ClassFinder
 						{
 							if (entry.getName().endsWith(classname + ".class") || entry.getName().endsWith(classname + ".java"))
 							{
-								CommandLineLogger.log("Class \"" + classname + "\" found in \"" + file.getAbsolutePath() + "\" as " + entry.getName());
+								logger.log(classname, file.getAbsolutePath(), entry.getName());
 							}
 						}
 						// No package qualified, just Class Name
@@ -226,7 +238,7 @@ public class ClassFinder
 								|| 
 								entry.getName().equals(classname + ".class") || entry.getName().equals(classname + ".java"))
 							{
-								CommandLineLogger.log("Class \"" + classname + "\" found in \"" + file.getAbsolutePath() + "\" as " + entry.getName());
+								logger.log(classname, file.getAbsolutePath(), entry.getName());
 							}
 						}
 					}
@@ -235,8 +247,8 @@ public class ClassFinder
 				{
 					if (verbose)
 					{
-						CommandLineLogger.log("Error reading file " + fullFileName + ": " + e.getMessage());
-						CommandLineLogger.logErr(e.getMessage());
+						logger.log("Error reading file " + fullFileName + ": " + e.getMessage());
+						logger.logErr(e.getMessage());
 					}
 				}
 			}
@@ -247,7 +259,7 @@ public class ClassFinder
 	{
 		if (!directory.exists())
 		{
-			CommandLineLogger.log("Directory \"" + directory.getAbsolutePath() + "\" does not exist!");
+			logger.log("Directory \"" + directory.getAbsolutePath() + "\" does not exist!");
 		}
 		
 		// File is directly passed on, no directory serach necessary

@@ -3,6 +3,7 @@ package com.optit.gui;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -11,23 +12,26 @@ import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.ListSelectionModel;
 
 import com.optit.ClassFinder;
 import com.optit.Parameters;
 import com.optit.SearchableFileFilter;
+import com.optit.logger.TableLogger;
 
 public class ClassFinderGui {
 
 	private JFrame frame;
 	private JTextField tfJarFileFolder;
 	private JTextField tfClassName;
-	private JTable resultsTable;
 	private JCheckBox chckbxMatchCase;
 	private JFileChooser fc;
+	private ClassFinderTableModel tm;
+	private JTable resultsTable;
 
 	/**
 	 * Launch the application.
@@ -93,9 +97,29 @@ public class ClassFinderGui {
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				ClassFinder finder = new ClassFinder();
-				finder.parseArguments(new String[] {Parameters.directory, tfJarFileFolder.getText(), Parameters.classname, tfClassName.getText(), (chckbxMatchCase.isSelected() ? Parameters.matchCase : null)});
-				finder.findClass();
+				// Path is empty
+				if (tfJarFileFolder.getText().isEmpty())
+				{
+					JOptionPane.showMessageDialog(null, "No folder was specified", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				// Path does not exist
+				else if (!new File(tfJarFileFolder.getText()).exists())
+				{
+					JOptionPane.showMessageDialog(null, "Specified path does not exist!", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				// Class name is empty
+				else if (tfClassName.getText().isEmpty())
+				{
+					JOptionPane.showMessageDialog(null, "No class name was specified", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				// Validation successful, run parsing
+				else
+				{
+					tm.removeAllRows();
+					ClassFinder finder = new ClassFinder(new TableLogger(tm));
+					finder.parseArguments(new String[] {Parameters.directory, tfJarFileFolder.getText(), Parameters.classname, tfClassName.getText(), (chckbxMatchCase.isSelected() ? Parameters.matchCase : null)});
+					finder.findClass();
+				}
 			}
 		});
 		
@@ -104,9 +128,24 @@ public class ClassFinderGui {
 		chckbxMatchCase = new JCheckBox("");
 		chckbxMatchCase.setSelected(true);
 		
-		resultsTable = new JTable();
+		tm = new ClassFinderTableModel (new String[] {"Class", "Jar file", "Location"}, 0);
+		resultsTable = new JTable(tm);
+		// Enable column selection for copy/paste
+		resultsTable.setColumnSelectionAllowed(true);
+		// Enable cell selection for copy/paste of the value
 		resultsTable.setCellSelectionEnabled(true);
-		resultsTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		// Make the table big enough to fill the viewport
+		resultsTable.setFillsViewportHeight(true);
+		// Make table sort-able
+		resultsTable.setAutoCreateRowSorter(true);
+		
+		// Set column widths
+		resultsTable.getColumnModel().getColumn(0).setPreferredWidth(40);
+		resultsTable.getColumnModel().getColumn(1).setPreferredWidth(250);
+		resultsTable.getColumnModel().getColumn(2).setPreferredWidth(10);
+		
+		JScrollPane scrollPane = new JScrollPane(resultsTable);
+		
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -129,7 +168,7 @@ public class ClassFinderGui {
 										.addComponent(btnSearch, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 										.addComponent(btnBrowse, GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)))
 								.addComponent(chckbxMatchCase)))
-						.addComponent(resultsTable, GroupLayout.PREFERRED_SIZE, 515, GroupLayout.PREFERRED_SIZE))
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 516, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
@@ -149,8 +188,8 @@ public class ClassFinderGui {
 					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 						.addComponent(chckbxMatchCase)
 						.addComponent(lblMatchCase))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(resultsTable, GroupLayout.PREFERRED_SIZE, 215, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 221, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		frame.getContentPane().setLayout(groupLayout);

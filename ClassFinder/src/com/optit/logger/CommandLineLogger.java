@@ -5,7 +5,7 @@ package com.optit.logger;
  * @author gvenzl
  *
  */
-public class CommandLineLogger
+public class CommandLineLogger implements Logger
 {
 	private static long milliSecs = 0;
 	private static boolean verboseFlag = false;
@@ -14,7 +14,7 @@ public class CommandLineLogger
 	 * En- or disables verbose output
 	 * @param debug True=enable debug; False=disable debug
 	 */
-	public static void setVerbose(boolean verbose)
+	public void setVerbose(boolean verbose)
 	{
 		verboseFlag = verbose;
 	}
@@ -23,7 +23,7 @@ public class CommandLineLogger
 	 * Logs one line into the standard output
 	 * @param line The line to log
 	 */
-	public static void log(String line)
+	public void log(String line)
 	{
 		synchronized (System.out)
 		{
@@ -35,7 +35,7 @@ public class CommandLineLogger
 	 * Logs one line into the standard output only if verbose is enabled
 	 * @param line The line to log
 	 */
-	public static void logVerbose(String line)
+	public void logVerbose(String line)
 	{
 		if (verboseFlag)
 		{
@@ -46,11 +46,22 @@ public class CommandLineLogger
 		}
 	}
 	
+	public void log(String className, String jarFile, String location)
+	{
+		if (null == jarFile || jarFile.isEmpty())
+		{
+			log();
+		}
+		else
+		{
+			log ("Class \"" + className + "\" found in \"" + jarFile + "\" as " + location);
+		}
+	}
 	
 	/**
 	 * Logs a new line into the standard output
 	 */
-	public static void log()
+	public void log()
 	{
 		synchronized (System.out)
 		{
@@ -62,7 +73,7 @@ public class CommandLineLogger
 	 * Logs a line into the standard output with timing set
 	 * @param line The line to log
 	 */
-	public static void logTimed(String line)
+	public void logTimed(String line)
 	{
 		if (milliSecs == 0)
 		{
@@ -87,7 +98,7 @@ public class CommandLineLogger
 	 * Logs an error into the error output
 	 * @param line The line to log
 	 */
-	public static void logErr(String line)
+	public void logErr(String line)
 	{
 		synchronized (System.err)
 		{

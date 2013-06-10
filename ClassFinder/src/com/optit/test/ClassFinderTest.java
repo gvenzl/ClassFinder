@@ -19,14 +19,14 @@ public class ClassFinderTest extends TestCase
 	public void test_handleException()
 	{
 		System.out.println("Test exception handling of non-caught exceptions");
-		ClassFinder.handleExceptions(new RuntimeException());
+		new ClassFinder().handleExceptions(new RuntimeException());
 	}
 
 	@Test
 	public void test_printHelp()
 	{
 		System.out.println("Test online help");
-		ClassFinder.printHelp();
+		new ClassFinder().printHelp();
 	}
 	
 	@Test

@@ -14,7 +14,7 @@ public class AllTest extends TestSuite
 		
 		TestSuite suite = new TestSuite("Test for all JUnit tests");
 		suite.addTestSuite(ClassFinderTest.class);
-		suite.addTestSuite(LoggerTest.class);
+		suite.addTestSuite(CommandLineLoggerTest.class);
 		suite.addTestSuite(ParameterTest.class);
 		return suite;
 	}

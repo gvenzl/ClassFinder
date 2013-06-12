@@ -30,6 +30,6 @@ public class ParameterTest extends TestCase
 		assertEquals("-d", Parameters.directory);
 		assertEquals("-c", Parameters.classname);
 		assertEquals("-m", Parameters.matchCase);
-		assertEquals("-verbose", Parameters.verbose);
+		assertEquals("-v", Parameters.verbose);
 	}
 }

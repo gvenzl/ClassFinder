@@ -1,5 +1,7 @@
 package com.optit;
 
+import java.awt.EventQueue;
+import java.awt.HeadlessException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -9,6 +11,9 @@ import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.swing.JFrame;
+
+import com.optit.gui.ClassFinderGui;
 import com.optit.logger.CommandLineLogger;
 import com.optit.logger.Logger;
 
@@ -33,16 +38,56 @@ public class ClassFinder implements Runnable
 	 */
 	public static void main(String[] args)
 	{
-		ClassFinder finder = new ClassFinder();
-		if (!finder.parseArguments(args))
+		// If arguments have been passed on, run directly in command line mode
+		if (args.length != 0)
 		{
+			ClassFinder finder = new ClassFinder();
+			// Parsing of arguments was successful
+			if (finder.parseArguments(args))
+			{
+				finder.findClass();
+			}
 			// Parsing of arguments was not successful, print help and exit
-			new ClassFinder().printHelp();
-			System.exit(0);
+			else
+			{
+				new ClassFinder().printHelp();
+			}
 		}
-		finder.findClass();
+		else
+		{
+			// Check whether UI can be build
+			try
+			{
+				// JFrame will throw a HeadlessException if UI can't be started.
+				new JFrame();
+				
+				// No exception got thrown, continue
+				EventQueue.invokeLater(
+					new Runnable()
+					{
+						public void run()
+						{
+							try
+							{
+								new ClassFinderGui();
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+					});
+			}
+			// new JFrame threw HeadlessException - print error and help
+			catch (HeadlessException he)
+			{
+				he.printStackTrace();
+				System.out.println();
+				new ClassFinder().printHelp();
+			}
+		}
 	}
-	
+
 	public void run()
 	{
 		findClass();
@@ -117,16 +162,16 @@ public class ClassFinder implements Runnable
 	 */
 	public void printHelp()
 	{
-		logger.log("Usage: java -jar ClassFinder.jar|com.optit.ClassFinder -d [directory] -c [classname] -m -verbose -help|-h|--help|-?");
+		logger.log("Usage: java -jar ClassFinder.jar|com.optit.ClassFinder -d [directory] -c [classname] -m -v -help|-h|--help|-?");
         logger.log("");
         logger.log("[-d]			The directory to search in");
         logger.log("[-c]			The classname to search for");
         logger.log("[-m]			Match case");
-        logger.log("[-verbose]			Enables verbose output");
+        logger.log("[-v]			Enables verbose output");
         logger.log("[-help|--help|-h|-?]	Display this help");
         logger.log();
         logger.log("The directory specified will be searched recursviely.");
-        logger.log("The class name can either just be the class name (e.g. String) or the fully qualified one (e.g. java.lang.String)");
+        logger.log("The class name can either just be the class name (e.g. String) or the fully qualified name (e.g. java.lang.String)");
         logger.log();
         logger.log("Good hunting!");
 	}

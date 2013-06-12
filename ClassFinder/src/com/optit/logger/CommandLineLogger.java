@@ -44,10 +44,7 @@ public class CommandLineLogger implements Logger
 	{
 		if (verboseFlag)
 		{
-			synchronized (System.out)
-			{
-				System.out.println("VERBOSE: " + line);
-			}
+			log(line);
 		}
 	}
 	

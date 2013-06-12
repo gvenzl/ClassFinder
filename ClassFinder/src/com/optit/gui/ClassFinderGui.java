@@ -1,6 +1,6 @@
 package com.optit.gui;
 
-import java.awt.EventQueue;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -24,6 +24,8 @@ import com.optit.ClassFinder;
 import com.optit.Parameters;
 import com.optit.SearchableFileFilter;
 import com.optit.logger.GuiLogger;
+import org.eclipse.wb.swing.FocusTraversalOnArray;
+import java.awt.Component;
 
 public class ClassFinderGui {
 
@@ -37,9 +39,9 @@ public class ClassFinderGui {
 	private JLabel statusBar;
 
 	/**
-	 * Launch the application.
+	 * Create the application.
 	 */
-	public static void main(String[] args)
+	public ClassFinderGui()
 	{
 		try
 		{
@@ -52,40 +54,23 @@ public class ClassFinderGui {
 			try
 			{
 				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-			} catch (Exception e1)
+			}
+			catch (Exception e1)
 			{
 				e1.printStackTrace();
 			}
 		}
-			EventQueue.invokeLater(
-					new Runnable()
-					{
-						public void run()
-						{
-							try
-							{
-								ClassFinderGui window = new ClassFinderGui();
-								window.frame.setVisible(true);
-							}
-							catch (Exception e)
-							{
-								e.printStackTrace();
-							}
-						}
-					});
-	}
-
-	/**
-	 * Create the application.
-	 */
-	public ClassFinderGui() {
+		
 		initialize();
+		
+		frame.setVisible(true);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize()
+		throws HeadlessException
 	{
 		frame = new JFrame();
 		frame.setBounds(100, 100, 640, 480);
@@ -120,6 +105,8 @@ public class ClassFinderGui {
 		});
 		
 		JButton btnSearch = new JButton("Search");
+		// Make search button default for ENTER key
+		frame.getRootPane().setDefaultButton(btnSearch);
 		btnSearch.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -146,8 +133,8 @@ public class ClassFinderGui {
 		
 		// Set column widths
 		resultsTable.getColumnModel().getColumn(0).setPreferredWidth(40);
-		resultsTable.getColumnModel().getColumn(1).setPreferredWidth(250);
-		resultsTable.getColumnModel().getColumn(2).setPreferredWidth(10);
+		resultsTable.getColumnModel().getColumn(1).setPreferredWidth(125);
+		resultsTable.getColumnModel().getColumn(2).setPreferredWidth(125);
 		
 		JScrollPane scrollPane = new JScrollPane(resultsTable);
 		
@@ -159,15 +146,15 @@ public class ClassFinderGui {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addComponent(lblJarFile)
 								.addComponent(lblClassName)
 								.addComponent(lblMatchCase))
-							.addGap(18)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addGroup(groupLayout.createSequentialGroup()
+									.addGap(18)
 									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
 										.addComponent(tfClassName)
 										.addComponent(tfJarFileFolder, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
@@ -175,7 +162,9 @@ public class ClassFinderGui {
 									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
 										.addComponent(btnSearch, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 										.addComponent(btnBrowse, GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)))
-								.addComponent(chckbxMatchCase)))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGap(18)
+									.addComponent(chckbxMatchCase))))
 						.addComponent(statusBar))
 					.addContainerGap())
 		);
@@ -192,17 +181,18 @@ public class ClassFinderGui {
 						.addComponent(lblClassName)
 						.addComponent(tfClassName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnSearch))
-					.addGap(7)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addComponent(chckbxMatchCase)
-						.addComponent(lblMatchCase))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblMatchCase)
+						.addComponent(chckbxMatchCase))
+					.addGap(13)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(statusBar)
 					.addGap(6))
 		);
 		frame.getContentPane().setLayout(groupLayout);
+		frame.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{tfJarFileFolder, btnBrowse, tfClassName, chckbxMatchCase, btnSearch}));
 	}
 	
 	private void performSearch()

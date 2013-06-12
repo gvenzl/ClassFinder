@@ -36,6 +36,16 @@
 		</javac>
 	</target>
 
+	<target name="compile-for-debug" depends="init" description="compile the source code with debugging information">
+		<!-- Compile the java code from ${dir.src} into ${dir.build} -->
+		<javac debug="true" srcdir="${dir.src}" destdir="${dir.build}">
+			<classpath>
+				<pathelement location="${JUnitLib}"/>
+			</classpath>
+		</javac>
+	</target>
+
+	
 	<target name="unitTest" depends="compile" description="Executes JUnit tests">
 		<junit fork="yes" maxmemory="512m" dir ="${basedir}"
 			haltonfailure="true" haltonerror="true">
@@ -67,6 +77,19 @@
 		</javadoc>
 	</target>	
 
+	<target name="build-for-debug" depends="clean,compile-for-debug,unitTest" description="generate the distribution with debugging information">
+		<!-- Create the distribution directory -->
+	
+		<!-- Put everything in ${dir.build} into the ${projectname}.jar file -->
+		<jar jarfile="${dir.build}/${projectname}_g.jar" basedir="${dir.build}" excludes="**/*.jar,**/com/oracle/test">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Main-Class" value="com.optit.ClassFinder"/>
+			</manifest>
+		</jar>
+	</target>
+
+	
 	<target name="build" depends="clean,compile,unitTest" description="generate the distribution">
 		<!-- Create the distribution directory -->
 	

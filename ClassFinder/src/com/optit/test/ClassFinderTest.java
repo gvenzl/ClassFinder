@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.optit.ClassFinder;
 import com.optit.Parameters;
+import com.optit.logger.CommandLineLogger;
 
 /**
  * @author gvenzl
@@ -15,6 +16,18 @@ import com.optit.Parameters;
  */
 public class ClassFinderTest extends TestCase
 {
+	@Test
+	public void test_ClassFinder()
+	{
+		new ClassFinder();
+	}
+	
+	@Test
+	public void test_ClassFinderWithCommandLineLogger()
+	{
+		new ClassFinder(new CommandLineLogger());
+	}
+	
 	@Test
 	public void test_handleException()
 	{
@@ -42,5 +55,20 @@ public class ClassFinderTest extends TestCase
 			new ClassFinder().buildFileList(new File("C:\\temp"));
 		else
 			new ClassFinder().buildFileList(new File("/tmp"));
+	}
+	
+	@Test
+	public void testNegative_buildFileList()
+	{
+		new ClassFinder().buildFileList(new File("IDoNotExist"));
+	}
+	
+	@Test
+	public void test_run() throws InterruptedException
+	{
+		ClassFinder finder = new ClassFinder();
+		finder.parseArguments(new String[] {Parameters.directory, "test", Parameters.classname, "test", Parameters.matchCase, Parameters.verbose});
+		finder.run();
+		
 	}
 }

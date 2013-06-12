@@ -88,11 +88,11 @@ public class ClassFinderGui {
 	private void initialize()
 	{
 		frame = new JFrame();
-		frame.setBounds(100, 100, 547, 377);
+		frame.setBounds(100, 100, 640, 480);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("ClassFinder");
 		
-		JLabel lblJarFile = new JLabel("Jar file / Folder:");
+		JLabel lblJarFile = new JLabel("File / Folder:");
 		
 		JLabel lblClassName = new JLabel("Class name:");
 		
@@ -124,40 +124,7 @@ public class ClassFinderGui {
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				// Path is empty
-				if (tfJarFileFolder.getText().isEmpty())
-				{
-					JOptionPane.showMessageDialog(null, "No folder was specified", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-				// Path does not exist
-				else if (!new File(tfJarFileFolder.getText()).exists())
-				{
-					JOptionPane.showMessageDialog(null, "Specified path does not exist!", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-				// Class name is empty
-				else if (tfClassName.getText().isEmpty())
-				{
-					JOptionPane.showMessageDialog(null, "No class name was specified", "Error", JOptionPane.ERROR_MESSAGE);
-				}
-				// Validation successful, run parsing
-				else
-				{
-					tm.removeAllRows();
-
-					ArrayList<String> params = new ArrayList<String>();
-					params.add(Parameters.directory);
-					params.add(tfJarFileFolder.getText());
-					params.add(Parameters.classname);
-					params.add(tfClassName.getText());
-					params.add(Parameters.verbose);
-					if (chckbxMatchCase.isSelected())
-					{
-						params.add(Parameters.matchCase);
-					}
-					ClassFinder finder = new ClassFinder(new GuiLogger(tm, statusBar));
-					if (finder.parseArguments(params.toArray(new String[] {})))
-						new Thread(finder).start();
-				}
+				performSearch();
 			}
 		});
 		
@@ -192,26 +159,25 @@ public class ClassFinderGui {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 516, Short.MAX_VALUE)
-							.addGroup(groupLayout.createSequentialGroup()
-								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-									.addComponent(lblJarFile)
-									.addComponent(lblClassName)
-									.addComponent(lblMatchCase))
-								.addGap(18)
-								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-									.addGroup(groupLayout.createSequentialGroup()
-										.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-											.addComponent(tfClassName)
-											.addComponent(tfJarFileFolder, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
-										.addGap(18)
-										.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-											.addComponent(btnSearch, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-											.addComponent(btnBrowse, GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)))
-									.addComponent(chckbxMatchCase))))
+						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblJarFile)
+								.addComponent(lblClassName)
+								.addComponent(lblMatchCase))
+							.addGap(18)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+										.addComponent(tfClassName)
+										.addComponent(tfJarFileFolder, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
+									.addGap(18)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+										.addComponent(btnSearch, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(btnBrowse, GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)))
+								.addComponent(chckbxMatchCase)))
 						.addComponent(statusBar))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -231,11 +197,50 @@ public class ClassFinderGui {
 						.addComponent(chckbxMatchCase)
 						.addComponent(lblMatchCase))
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 203, GroupLayout.PREFERRED_SIZE)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(statusBar)
-					.addContainerGap(19, Short.MAX_VALUE))
+					.addGap(6))
 		);
 		frame.getContentPane().setLayout(groupLayout);
+	}
+	
+	private void performSearch()
+	{
+		// Path is empty
+		if (tfJarFileFolder.getText().isEmpty())
+		{
+			JOptionPane.showMessageDialog(null, "No file or folder was specified!", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		// Path does not exist
+		else if (!new File(tfJarFileFolder.getText()).exists())
+		{
+			JOptionPane.showMessageDialog(null, "Specified path does not exist!", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		// Class name is empty
+		else if (tfClassName.getText().isEmpty())
+		{
+			JOptionPane.showMessageDialog(null, "No class name was specified!", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		// Validation successful, run parsing
+		else
+		{
+			statusBar.setText("Searching...");
+			tm.removeAllRows();
+
+			ArrayList<String> params = new ArrayList<String>();
+			params.add(Parameters.directory);
+			params.add(tfJarFileFolder.getText());
+			params.add(Parameters.classname);
+			params.add(tfClassName.getText());
+			params.add(Parameters.verbose);
+			if (chckbxMatchCase.isSelected())
+			{
+				params.add(Parameters.matchCase);
+			}
+			ClassFinder finder = new ClassFinder(new GuiLogger(tm, statusBar));
+			if (finder.parseArguments(params.toArray(new String[] {})))
+				new Thread(finder).start();
+		}
 	}
 }

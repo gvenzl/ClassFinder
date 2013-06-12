@@ -281,9 +281,8 @@ public class ClassFinder implements Runnable
 		{
 			logger.log("Directory \"" + directory.getAbsolutePath() + "\" does not exist!");
 		}
-		
 		// File is directly passed on, no directory search necessary
-		if (!directory.isDirectory() && new SearchableFileFilter().accept(directory))
+		else if (!directory.isDirectory() && new SearchableFileFilter().accept(directory))
 		{
 			files.add(directory);
 		}

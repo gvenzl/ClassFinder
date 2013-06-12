@@ -27,6 +27,13 @@ public class CommandLineLoggerTest extends TestCase
 	}
 	
 	@Test
+	public void test_logThreeParams()
+	{
+		System.out.println("Test logger with three parameters passed on");
+		new CommandLineLogger().log("MyClass", "InThis.jar", "Under/That/Path/");
+	}
+	
+	@Test
 	public void test_logErr() throws Exception
 	{
 		System.out.println("Test logger to error output");
@@ -42,13 +49,23 @@ public class CommandLineLoggerTest extends TestCase
 	}
 	
 	@Test
-	public void test_setDebug() throws Exception
+	public void test_setVerbose() throws Exception
 	{
 		new CommandLineLogger().setVerbose(true);
 	}
 	
 	@Test
-	public void test_logDebug() throws Exception
+	public void test_getVerbose()
+	{
+		CommandLineLogger logger = new CommandLineLogger();
+		logger.setVerbose(true);
+		assertEquals(true, logger.getVerbose());
+		logger.setVerbose(false);
+		assertEquals(false, logger.getVerbose());
+	}
+	
+	@Test
+	public void test_logVerbose() throws Exception
 	{
 		new CommandLineLogger().setVerbose(true);
 		new CommandLineLogger().logVerbose("This is a DEBUG OUTPUT!");

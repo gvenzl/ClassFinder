@@ -207,7 +207,7 @@ public class ClassFinder implements Runnable
 			classname = classname.toLowerCase();
 		}
 
-		
+		logger.logVerbose("Building directory search tree...");
 		// Get file tree of directory
 		buildFileList(new File(parameters.getProperty(Parameters.directory)));
 		

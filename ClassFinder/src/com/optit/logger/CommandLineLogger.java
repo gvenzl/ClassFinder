@@ -48,16 +48,9 @@ public class CommandLineLogger implements Logger
 		}
 	}
 	
-	public void log(String className, String jarFile, String location)
+	public void log(String className, String location)
 	{
-		if (null == jarFile || jarFile.isEmpty())
-		{
-			log();
-		}
-		else
-		{
-			log ("Class \"" + className + "\" found in \"" + jarFile + "\" as " + location);
-		}
+		log ("Class \"" + className + "\" found at \"" + location);
 	}
 	
 	/**

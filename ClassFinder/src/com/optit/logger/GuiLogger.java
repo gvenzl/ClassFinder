@@ -30,19 +30,19 @@ public class GuiLogger implements Logger
 	@Override
 	public void log()
 	{
-		log(null, null, null);
+		log(null, null);
 	}
 
 	@Override
 	public void log(String line)
 	{
-		log(line, line, line);
+		log(line, line);
 	}
 
 	@Override
-	public void log(String className, String jarFile, String location) 
+	public void log(String className, String location) 
 	{
-		tm.addRow(new String[] {className, jarFile, location});
+		tm.addRow(new String[] {className, location});
 	}
 
 	@Override
@@ -54,6 +54,6 @@ public class GuiLogger implements Logger
 	@Override
 	public void logErr(String line)
 	{
-		tm.addRow(new Object[] {line, line, line});
+		tm.addRow(new Object[] {line, line});
 	}
 }

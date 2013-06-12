@@ -246,7 +246,7 @@ public class ClassFinder implements Runnable
 					||
 					(!containsPackageQualifier && fileName.equals(classname + ".class")))
 				{
-					logger.log(file.getName(), null, file.getAbsolutePath());
+					logger.log(file.getName(), file.getAbsolutePath());
 				}
 			}
 			// Direct java source file
@@ -266,7 +266,7 @@ public class ClassFinder implements Runnable
 					||
 					(!containsPackageQualifier && fileName.equals(classname + ".java")))
 				{
-					logger.log(file.getName(), null, file.getAbsolutePath());
+					logger.log(file.getName(), file.getAbsolutePath());
 				}
 			}
 			// The rest of the files: jar, war, ear, zip, rar
@@ -288,7 +288,7 @@ public class ClassFinder implements Runnable
 						{
 							if (entryName.endsWith(classname + ".class") || entryName.endsWith(classname + ".java"))
 							{
-								logger.log(entry.getName(), file.getAbsolutePath(), entry.getName());
+								logger.log(entry.getName(), file.getAbsolutePath());
 							}
 						}
 						// No package qualified, just Class Name
@@ -304,7 +304,7 @@ public class ClassFinder implements Runnable
 								|| 
 								entryName.equals(classname + ".class") || entryName.equals(classname + ".java"))
 							{
-								logger.log(entry.getName(), file.getAbsolutePath(), entry.getName());
+								logger.log(entry.getName(), file.getAbsolutePath());
 							}
 						}
 					}

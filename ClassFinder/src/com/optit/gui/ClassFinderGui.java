@@ -120,7 +120,7 @@ public class ClassFinderGui {
 		chckbxMatchCase = new JCheckBox("");
 		chckbxMatchCase.setSelected(true);
 		
-		tm = new ClassFinderTableModel (new String[] {"Class", "Jar file", "Location"}, 0);
+		tm = new ClassFinderTableModel (new String[] {"Class", "Location"}, 0);
 		resultsTable = new JTable(tm);
 		// Enable column selection for copy/paste
 		resultsTable.setColumnSelectionAllowed(true);
@@ -134,7 +134,6 @@ public class ClassFinderGui {
 		// Set column widths
 		resultsTable.getColumnModel().getColumn(0).setPreferredWidth(40);
 		resultsTable.getColumnModel().getColumn(1).setPreferredWidth(125);
-		resultsTable.getColumnModel().getColumn(2).setPreferredWidth(125);
 		
 		JScrollPane scrollPane = new JScrollPane(resultsTable);
 		

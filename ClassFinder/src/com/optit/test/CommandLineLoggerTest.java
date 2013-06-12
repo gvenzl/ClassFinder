@@ -30,7 +30,7 @@ public class CommandLineLoggerTest extends TestCase
 	public void test_logThreeParams()
 	{
 		System.out.println("Test logger with three parameters passed on");
-		new CommandLineLogger().log("MyClass", "InThis.jar", "Under/That/Path/");
+		new CommandLineLogger().log("MyClass", "InThis.jar");
 	}
 	
 	@Test

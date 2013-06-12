@@ -6,7 +6,7 @@ public interface Logger
 	
 	public void log(String line);
 	
-	public void log(String className, String jarFile, String location);
+	public void log(String className, String location);
 	
 	public void logErr(String line);
 	

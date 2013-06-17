@@ -16,6 +16,7 @@ public class AllTest extends TestSuite
 		suite.addTestSuite(ClassFinderTest.class);
 		suite.addTestSuite(CommandLineLoggerTest.class);
 		suite.addTestSuite(ParameterTest.class);
+		suite.addTestSuite(SearchableFileFilterTest.class);
 		return suite;
 	}
 }

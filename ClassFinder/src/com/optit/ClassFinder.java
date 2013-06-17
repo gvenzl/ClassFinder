@@ -81,7 +81,7 @@ public class ClassFinder implements Runnable
 			// new JFrame threw HeadlessException - print error and help
 			catch (HeadlessException he)
 			{
-				he.printStackTrace();
+				System.out.println(he.getMessage());
 				System.out.println();
 				new ClassFinder().printHelp();
 			}

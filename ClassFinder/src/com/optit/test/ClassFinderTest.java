@@ -71,4 +71,12 @@ public class ClassFinderTest extends TestCase
 		finder.run();
 		
 	}
+	
+	@Test
+	public void test_findClass()
+	{
+		ClassFinder finder = new ClassFinder();
+		finder.parseArguments(new String[] {Parameters.directory, ".", Parameters.classname, "Test,"});
+		finder.findClass();
+	}
 }

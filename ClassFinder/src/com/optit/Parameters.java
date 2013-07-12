@@ -11,5 +11,6 @@ public abstract class Parameters
 	public static final String directory = "-d";
 	public static final String classname = "-c";
 	public static final String matchCase = "-m";
+	public static final String recursiveSearch = "-r";
 	public static final String verbose = "-v";
 }

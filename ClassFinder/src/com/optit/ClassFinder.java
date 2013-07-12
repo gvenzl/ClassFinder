@@ -111,6 +111,7 @@ public class ClassFinder implements Runnable
 			parameters = new Properties();
 			// Set defaults
 			parameters.setProperty(Parameters.matchCase, "false");
+			parameters.setProperty(Parameters.recursiveSearch, "false");
 			parameters.setProperty(Parameters.verbose, "false");
 			
 			for (int i=0;i<args.length;i++)
@@ -130,6 +131,11 @@ public class ClassFinder implements Runnable
 					case Parameters.matchCase:
 					{
 						parameters.setProperty(Parameters.matchCase, "true");
+						break;
+					}
+					case Parameters.recursiveSearch:
+					{
+						parameters.setProperty(Parameters.recursiveSearch, "true");
 						break;
 					}
 					case Parameters.verbose:
@@ -167,6 +173,7 @@ public class ClassFinder implements Runnable
         logger.log("[-d]			The directory to search in");
         logger.log("[-c]			The classname to search for");
         logger.log("[-m]			Match case");
+        logger.log("[-r]			Recursive search (search sub directories)");
         logger.log("[-v]			Enables verbose output");
         logger.log("[-help|--help|-h|-?]	Display this help");
         logger.log();
@@ -209,7 +216,7 @@ public class ClassFinder implements Runnable
 
 		logger.logVerbose("Building directory search tree...");
 		// Get file tree of directory
-		buildFileList(new File(parameters.getProperty(Parameters.directory)));
+		buildFileList(new File(parameters.getProperty(Parameters.directory)), parameters.getProperty(Parameters.recursiveSearch).equals("true"));
 		
 		Iterator<File> fileIterator = files.iterator();
 		// Loop over all the filtered files
@@ -320,7 +327,7 @@ public class ClassFinder implements Runnable
 		logger.logVerbose("Finished search");
 	}
 	
-	public void buildFileList(File directory)
+	public void buildFileList(File directory, boolean recursive)
 	{
 		if (!directory.exists())
 		{
@@ -335,9 +342,13 @@ public class ClassFinder implements Runnable
 		{
 			for (File file : directory.listFiles(new SearchableFileFilter()))
 			{
+				// Build recursive tree if recursive flag is set
 				if (file.isDirectory())
 				{
-					buildFileList(file);
+					if (recursive)
+					{
+						buildFileList(file, true);
+					}
 				}
 				else
 				{

@@ -52,15 +52,15 @@ public class ClassFinderTest extends TestCase
 	public void test_buildFileList()
 	{
 		if (System.getProperty("os.name").startsWith("Windows"))
-			new ClassFinder().buildFileList(new File("C:\\temp"));
+			new ClassFinder().buildFileList(new File("C:\\temp"), true);
 		else
-			new ClassFinder().buildFileList(new File("/tmp"));
+			new ClassFinder().buildFileList(new File("/tmp"), true);
 	}
 	
 	@Test
 	public void testNegative_buildFileList()
 	{
-		new ClassFinder().buildFileList(new File("IDoNotExist"));
+		new ClassFinder().buildFileList(new File("IDoNotExist"), false);
 	}
 	
 	@Test

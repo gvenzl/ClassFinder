@@ -37,6 +37,7 @@ public class ClassFinderGui {
 	private ClassFinderTableModel tm;
 	private JTable resultsTable;
 	private JLabel statusBar;
+	private JCheckBox chckbxRecursiveSearch;
 
 	/**
 	 * Create the application.
@@ -139,6 +140,11 @@ public class ClassFinderGui {
 		
 		statusBar = new JLabel("Ready");
 		
+		JLabel lblRecursive = new JLabel("Recursive:");
+		
+		chckbxRecursiveSearch = new JCheckBox("");
+		chckbxRecursiveSearch.setSelected(true);
+		
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -151,9 +157,9 @@ public class ClassFinderGui {
 								.addComponent(lblJarFile)
 								.addComponent(lblClassName)
 								.addComponent(lblMatchCase))
+							.addGap(18)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(18)
 									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
 										.addComponent(tfClassName)
 										.addComponent(tfJarFileFolder, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
@@ -162,8 +168,11 @@ public class ClassFinderGui {
 										.addComponent(btnSearch, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 										.addComponent(btnBrowse, GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)))
 								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(chckbxMatchCase)
 									.addGap(18)
-									.addComponent(chckbxMatchCase))))
+									.addComponent(lblRecursive, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
+									.addGap(20)
+									.addComponent(chckbxRecursiveSearch, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE))))
 						.addComponent(statusBar))
 					.addContainerGap())
 		);
@@ -183,15 +192,20 @@ public class ClassFinderGui {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 						.addComponent(lblMatchCase)
-						.addComponent(chckbxMatchCase))
+						.addComponent(chckbxMatchCase)
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+							.addGroup(groupLayout.createSequentialGroup()
+								.addGap(7)
+								.addComponent(lblRecursive))
+							.addComponent(chckbxRecursiveSearch, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)))
 					.addGap(13)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 312, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(statusBar)
 					.addGap(6))
 		);
 		frame.getContentPane().setLayout(groupLayout);
-		frame.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{tfJarFileFolder, btnBrowse, tfClassName, chckbxMatchCase, btnSearch}));
+		frame.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{tfJarFileFolder, btnBrowse, tfClassName, chckbxMatchCase, chckbxRecursiveSearch, btnSearch}));
 	}
 	
 	private void performSearch()
@@ -223,10 +237,17 @@ public class ClassFinderGui {
 			params.add(Parameters.classname);
 			params.add(tfClassName.getText());
 			params.add(Parameters.verbose);
+			
 			if (chckbxMatchCase.isSelected())
 			{
 				params.add(Parameters.matchCase);
 			}
+			
+			if (chckbxRecursiveSearch.isSelected())
+			{
+				params.add(Parameters.recursiveSearch);
+			}
+			
 			ClassFinder finder = new ClassFinder(new GuiLogger(tm, statusBar));
 			if (finder.parseArguments(params.toArray(new String[] {})))
 				new Thread(finder).start();

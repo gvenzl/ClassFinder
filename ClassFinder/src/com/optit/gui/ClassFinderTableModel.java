@@ -46,11 +46,4 @@ public class ClassFinderTableModel extends DefaultTableModel
     public boolean isCellEditable(int row, int column) {
         return false;
     } 
-
-	public void removeAllRows()
-	{
-		while (this.getRowCount() > 0)
-			this.removeRow(this.getRowCount()-1);
-
-	}
 }

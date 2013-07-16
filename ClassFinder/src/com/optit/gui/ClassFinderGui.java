@@ -229,7 +229,7 @@ public class ClassFinderGui {
 		else
 		{
 			statusBar.setText("Searching...");
-			tm.removeAllRows();
+			tm.setRowCount(0);
 
 			ArrayList<String> params = new ArrayList<String>();
 			params.add(Parameters.directory);

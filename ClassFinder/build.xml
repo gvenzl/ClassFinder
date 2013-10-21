@@ -11,7 +11,7 @@
 	<property name="dir.doc" location="doc"/>
 	<property name="dir.javadoc" location="${dir.doc}/javadoc"/>
 	<!-- Class paths -->
-	<property name="JUnitLib" value="C:/Program Files/eclipse juno/plugins/org.junit_4.10.0.v4_10_0_v20120426-0900/junit.jar"/>
+	<property name="JUnitLib" value="C:\Program Files\Eclipse Kepler\plugins\org.junit_4.11.0.v201303080030/junit.jar"/>
 	<property name="test.class.name" value="com.optit.test.AllTest"/>
 
 	<target name="init">

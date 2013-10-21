@@ -7,20 +7,15 @@ public final class SearchableFileFilter extends javax.swing.filechooser.FileFilt
 	@Override
 	public boolean accept(File pathname)
 	{
-		if (pathname.isDirectory())
-			return true;
-		
-		String fileName = pathname.getName();
-		if (fileName.endsWith(".jar")
+		final String fileName = pathname.getName();
+		return (pathname.isDirectory()
+			|| fileName.endsWith(".jar")
 			|| fileName.endsWith(".war")
 			|| fileName.endsWith(".ear")
 			|| fileName.endsWith(".zip")
 			|| fileName.endsWith(".rar")
 			|| fileName.endsWith(".class")
-			|| fileName.endsWith(".java"))
-			return true;
-		else
-			return false;
+			|| fileName.endsWith(".java"));
 	}
 
 	@Override

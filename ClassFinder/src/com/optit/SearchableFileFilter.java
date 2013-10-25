@@ -2,6 +2,11 @@ package com.optit;
 
 import java.io.File;
 
+/**
+ * 
+ * @author gvenzl
+ *
+ */
 public final class SearchableFileFilter extends javax.swing.filechooser.FileFilter implements java.io.FileFilter
 {
 	@Override

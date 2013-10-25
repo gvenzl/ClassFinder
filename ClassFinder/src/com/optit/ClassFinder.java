@@ -17,6 +17,10 @@ import com.optit.gui.ClassFinderGui;
 import com.optit.logger.CommandLineLogger;
 import com.optit.logger.Logger;
 
+/**
+ * 
+ * @author gvenzl
+ */
 public class ClassFinder implements Runnable
 {
 	private Properties parameters;

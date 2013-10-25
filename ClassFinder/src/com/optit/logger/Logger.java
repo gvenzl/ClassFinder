@@ -1,5 +1,10 @@
 package com.optit.logger;
 
+/**
+ * 
+ * @author gvenzl
+ *
+ */
 public interface Logger
 {
 	public void log();

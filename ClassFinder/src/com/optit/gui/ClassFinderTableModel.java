@@ -4,6 +4,11 @@ import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
 
+/**
+ * 
+ * @author gvenzl
+ *
+ */
 public class ClassFinderTableModel extends DefaultTableModel
 {
 	private static final long serialVersionUID = -6524244270026531200L;

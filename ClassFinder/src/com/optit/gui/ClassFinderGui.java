@@ -27,6 +27,11 @@ import com.optit.logger.GuiLogger;
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 import java.awt.Component;
 
+/**
+ * 
+ * @author gvenzl
+ *
+ */
 public class ClassFinderGui {
 
 	private JFrame frame;

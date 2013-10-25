@@ -3,6 +3,11 @@ package com.optit.logger;
 import javax.swing.JLabel;
 import javax.swing.table.DefaultTableModel;
 
+/**
+ * 
+ * @author gvenzl
+ *
+ */
 public class GuiLogger implements Logger
 {
 	private DefaultTableModel tm;

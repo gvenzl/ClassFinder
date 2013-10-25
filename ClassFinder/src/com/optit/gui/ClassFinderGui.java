@@ -44,26 +44,19 @@ public class ClassFinderGui {
 	 */
 	public ClassFinderGui()
 	{
-		try
-		{
+		try {
 			// Set system look and feel (Windows / Unix, etc.)
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			// If System look and feel failed, set the CrossPlatform UI look and feel
-			try
-			{
+			try {
 				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-			}
-			catch (Exception e1)
-			{
+			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}
 		
 		initialize();
-		
 		frame.setVisible(true);
 	}
 
@@ -170,7 +163,7 @@ public class ClassFinderGui {
 								.addGroup(groupLayout.createSequentialGroup()
 									.addComponent(chckbxMatchCase)
 									.addGap(18)
-									.addComponent(lblRecursive, GroupLayout.PREFERRED_SIZE, 58, GroupLayout.PREFERRED_SIZE)
+									.addComponent(lblRecursive, GroupLayout.PREFERRED_SIZE, 64, GroupLayout.PREFERRED_SIZE)
 									.addGap(20)
 									.addComponent(chckbxRecursiveSearch, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE))))
 						.addComponent(statusBar))

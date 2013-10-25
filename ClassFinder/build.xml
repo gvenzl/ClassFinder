@@ -11,7 +11,7 @@
 	<property name="dir.doc" location="doc"/>
 	<property name="dir.javadoc" location="${dir.doc}/javadoc"/>
 	<!-- Class paths -->
-	<property name="JUnitLib" value="C:\Program Files\Eclipse Kepler\plugins\org.junit_4.11.0.v201303080030/junit.jar"/>
+	<property name="JUnitLib" value="/Applications/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar"/>
 	<property name="test.class.name" value="com.optit.test.AllTest"/>
 
 	<target name="init">
@@ -29,7 +29,7 @@
 	
 	<target name="compile" depends="init" description="compile the source code">
 		<!-- Compile the java code from ${dir.src} into ${dir.build} -->
-		<javac srcdir="${dir.src}" destdir="${dir.build}">
+		<javac srcdir="${dir.src}" destdir="${dir.build}" verbose="true" classpath="${JUnitLib}">
 			<classpath>
 				<pathelement location="${JUnitLib}"/>
 			</classpath>
@@ -62,7 +62,7 @@
 
 	<target name="javadoc">
 		<javadoc
-			excludepackagenames="com.optit.test.*,junit.framework.*,com.mysql.jdbc.*,oracle.jdbc.*"
+			excludepackagenames="com.optit.test.*,junit.framework.*"
 			access="public"
 			destdir="${dir.javadoc}"
 			author="true"
@@ -81,9 +81,9 @@
 		<!-- Create the distribution directory -->
 	
 		<!-- Put everything in ${dir.build} into the ${projectname}.jar file -->
-		<jar jarfile="${dir.build}/${projectname}_g.jar" basedir="${dir.build}" excludes="**/*.jar,**/com/oracle/test">
+		<jar jarfile="${dir.build}/${projectname}_g.jar" basedir="${dir.build}" excludes="**/*.jar,**/com/optit/test">
 			<manifest>
-				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Built-By" value="gvenzl"/>
 				<attribute name="Main-Class" value="com.optit.ClassFinder"/>
 			</manifest>
 		</jar>
@@ -94,7 +94,7 @@
 		<!-- Create the distribution directory -->
 	
 		<!-- Put everything in ${dir.build} into the ${projectname}.jar file -->
-		<jar jarfile="${dir.build}/${projectname}.jar" basedir="${dir.build}" excludes="**/*.jar,**/com/oracle/test">
+		<jar jarfile="${dir.build}/${projectname}.jar" basedir="${dir.build}" excludes="**/*.jar,**/com/optit/test">
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Main-Class" value="com.optit.ClassFinder"/>
@@ -106,17 +106,6 @@
 		<antcall target="package-bin"/>
 		<antcall target="package-src"/>
 		<tar destfile="${dir.build}/${projectname}-${version}.tar.gz" compression="gzip">
-			<tarfileset dir="${basedir}">
-				<include name="src/**"/>
-				<include name="build/**"/>
-				<exclude name="**/test"/>
-				<include name="doc/**"/>
-				<exclude name=".svn"/>
-				<exclude name="test"/>
-				<exclude name="junit*"/>
-				<include name="ReadMe.txt"/>
-				<include name="${projectname}.properties"/>
-			</tarfileset>
 			<tarfileset dir="${dir.build}">
 				<include name="${projectname}.jar"/>
 			</tarfileset>
@@ -126,13 +115,6 @@
 	<target name="package-bin" description="Package a new distribution">
 		<!-- Package the binary distribution containing the .jar file, libraries, properties file as well as the ReadMe.txt file -->
 		<tar destfile="${dir.build}/${projectname}-${version}-bin.tar.gz" compression="gzip">
-			<tarfileset dir="${basedir}">
-				<include name="ReadMe.txt"/>
-				<include name="${projectname}.properties"/>
-				<include name="run.sh"/>
-				<include name="run.bat"/>
-				<include name="allSqls.sql"/>
-			</tarfileset>
 			<tarfileset dir="${dir.build}">
 				<include name="${projectname}.jar"/>
 			</tarfileset>
@@ -149,6 +131,7 @@
 				<include name="doc/**"/>
 				<include name="ReadMe.txt"/>
 				<exclude name=".svn"/>
+				<exclude name=".git"/>
 				<exclude name="junit*"/>
 			</tarfileset>
 		</tar>

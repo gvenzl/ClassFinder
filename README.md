@@ -11,13 +11,17 @@ be cause no X11 terminal exists, the program will automatically print its CLI pa
 Usage: java -jar ClassFinder.jar|com.optit.ClassFinder -d [directory] -c [classname] -m -v -help|-h|--help|-?
 
 [-d]			The directory to search in
+
 [-c]			The classname to search for
+
 [-m]			Match case
+
 [-r]			Recursive search (search sub directories)
+
 [-v]			Enables verbose output
+
 [-help|--help|-h|-?]	Display this help
 
-The directory specified will be searched recursviely.
 The class name can either just be the class name (e.g. String) or the fully qualified name (e.g. java.lang.String)
 
 Good hunting!

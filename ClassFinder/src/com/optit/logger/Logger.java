@@ -5,8 +5,7 @@ package com.optit.logger;
  * @author gvenzl
  *
  */
-public interface Logger
-{
+public interface Logger {
 	public void log();
 	
 	public void log(String line);

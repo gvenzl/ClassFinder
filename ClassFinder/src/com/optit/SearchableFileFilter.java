@@ -7,11 +7,11 @@ import java.io.File;
  * @author gvenzl
  *
  */
-public final class SearchableFileFilter extends javax.swing.filechooser.FileFilter implements java.io.FileFilter
-{
+public final class SearchableFileFilter
+				extends javax.swing.filechooser.FileFilter
+				implements java.io.FileFilter {
 	@Override
-	public boolean accept(File pathname)
-	{
+	public boolean accept(File pathname) {
 		final String fileName = pathname.getName();
 		return (pathname.isDirectory()
 			|| fileName.endsWith(".jar")
@@ -24,8 +24,7 @@ public final class SearchableFileFilter extends javax.swing.filechooser.FileFilt
 	}
 
 	@Override
-	public String getDescription()
-	{
+	public String getDescription() {
 		return ".jar, .war, .ear, .zip, .class, .java, directory";
 	}
 

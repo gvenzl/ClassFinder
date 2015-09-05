@@ -7,10 +7,8 @@ import junit.framework.TestSuite;
  * @author gvenzl
  *
  */
-public class AllTest extends TestSuite
-{
-	public static Test suite()
-	{
+public class AllTest extends TestSuite {
+	public static Test suite() {
 		
 		TestSuite suite = new TestSuite("Test for all JUnit tests");
 		suite.addTestSuite(ClassFinderTest.class);

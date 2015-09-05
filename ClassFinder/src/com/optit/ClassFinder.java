@@ -21,70 +21,56 @@ import com.optit.logger.Logger;
  * 
  * @author gvenzl
  */
-public class ClassFinder implements Runnable
-{
+public class ClassFinder implements Runnable {
 	private Properties parameters;
 	private LinkedList<File> files = new LinkedList<File>();
 	private Logger logger;
 	
-	public ClassFinder()
-	{
+	public ClassFinder() {
 		logger = new CommandLineLogger();
 	}
 	
-	public ClassFinder(Logger logger)
-	{
+	public ClassFinder(Logger logger) {
 		this.logger = logger;
 	}
 	
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args)
-	{
+	public static void main(String[] args) {
 		// If arguments have been passed on, run directly in command line mode
-		if (args.length != 0)
-		{
+		if (args.length != 0) {
 			ClassFinder finder = new ClassFinder();
 			// Parsing of arguments was successful
-			if (finder.parseArguments(args))
-			{
+			if (finder.parseArguments(args)) {
 				finder.findClass();
 			}
 			// Parsing of arguments was not successful, print help and exit
-			else
-			{
+			else {
 				new ClassFinder().printHelp();
 			}
 		}
-		else
-		{
+		else {
 			// Check whether UI can be build
-			try
-			{
+			try {
 				// JFrame will throw a HeadlessException if UI can't be started.
 				new JFrame();
 				
 				// No exception got thrown, continue
 				EventQueue.invokeLater(
-					new Runnable()
-					{
-						public void run()
-						{
-							try
-							{
+					new Runnable() {
+						public void run() {
+							try {
 								new ClassFinderGui();
 							}
-							catch (Exception e)
-							{
+							catch (Exception e) {
 								e.printStackTrace();
 							}
 						}
 					});
 			}
 			// new JFrame threw HeadlessException - print error and help
-			catch (HeadlessException he)
-			{
+			catch (HeadlessException he) {
 				System.out.println(he.getMessage());
 				System.out.println();
 				new ClassFinder().printHelp();
@@ -92,8 +78,7 @@ public class ClassFinder implements Runnable
 		}
 	}
 
-	public void run()
-	{
+	public void run() {
 		findClass();
 	}
 	
@@ -102,15 +87,12 @@ public class ClassFinder implements Runnable
 	 * @param args The arguments to pass on
 	 * @return Whether the parsing of the arguments was successful
 	 */
-	public boolean parseArguments(String[] args)
-	{
+	public boolean parseArguments(String[] args) {
 		// No parameters were passed, print help and exit printHelp does the exit
-		if (null == args || args.length == 0 || args.length == 1)
-		{
+		if (null == args || args.length == 0 || args.length == 1) {
 			return false;
 		}
-		else
-		{
+		else {
 			// Parameters were passed on, properties file ignored -> read passed on parameters
 			parameters = new Properties();
 			// Set defaults
@@ -118,45 +100,36 @@ public class ClassFinder implements Runnable
 			parameters.setProperty(Parameters.recursiveSearch, "false");
 			parameters.setProperty(Parameters.verbose, "false");
 			
-			for (int i=0;i<args.length;i++)
-			{
-				switch (args[i])
-				{
-					case Parameters.directory:
-					{
+			for (int i=0;i<args.length;i++) {
+				switch (args[i]) {
+					case Parameters.directory: {
 						parameters.setProperty(Parameters.directory, args[++i]);
 						break;
 					}
-					case Parameters.classname:
-					{
+					case Parameters.classname: {
 						parameters.setProperty(Parameters.classname, args[++i]);
 						break;
 					}
-					case Parameters.matchCase:
-					{
+					case Parameters.matchCase: {
 						parameters.setProperty(Parameters.matchCase, "true");
 						break;
 					}
-					case Parameters.recursiveSearch:
-					{
+					case Parameters.recursiveSearch: {
 						parameters.setProperty(Parameters.recursiveSearch, "true");
 						break;
 					}
-					case Parameters.verbose:
-					{
+					case Parameters.verbose: {
 						parameters.setProperty(Parameters.verbose, "true");
 						break;
 					}
 					case "-help":
 					case "--help":
 					case "-?":
-					case "--?":
-					{
+					case "--?": {
 						printHelp();
 						System.exit(0);
 					}
-					default:
-					{
+					default: {
 						logger.log("Unknown parameter: " + args[i]);
 						logger.log();
 						return false;
@@ -170,8 +143,7 @@ public class ClassFinder implements Runnable
 	/**
 	 * Print usage help into stdout and Exit
 	 */
-	public void printHelp()
-	{
+	public void printHelp() {
 		logger.log("Usage: java -jar ClassFinder.jar|com.optit.ClassFinder -d [directory] -c [classname] -m -v -help|-h|--help|-?");
         logger.log("");
         logger.log("[-d]			The directory to search in");
@@ -191,19 +163,16 @@ public class ClassFinder implements Runnable
 	 * This function sits on the top level and catches all exceptions and prints out proper error messages 
 	 * @param e The exception that comes from somewhere within the code
 	 */
-	public void handleExceptions(Exception e)
-	{
+	public void handleExceptions(Exception e) {
 		logger.log("Application error: " + e.getMessage());
-		if (e.getCause() != null)
-		{
+		if (e.getCause() != null) {
 			logger.log("Caused by: " + e.getCause().toString());
 		}
 		e.printStackTrace(System.err);
 	}
 	
 	// Find the class
-	public void findClass()
-	{
+	public void findClass() {
 		logger.setVerbose(parameters.getProperty(Parameters.verbose).equals("true"));
 		boolean matchCase = (parameters.getProperty(Parameters.matchCase).equals("true"));
 
@@ -213,8 +182,7 @@ public class ClassFinder implements Runnable
 		String classname = parameters.getProperty(Parameters.classname).replaceAll("\\.", "/");
 		
 		// Not case sensitive
-		if (!matchCase)
-		{
+		if (!matchCase)	{
 			classname = classname.toLowerCase();
 		}
 
@@ -224,8 +192,7 @@ public class ClassFinder implements Runnable
 		
 		Iterator<File> fileIterator = files.iterator();
 		// Loop over all the filtered files
-		while (fileIterator.hasNext())
-		{
+		while (fileIterator.hasNext()) {
 			File file = fileIterator.next();
 			
 			// Use full qualified file name for logging, not the \ replaced one
@@ -234,15 +201,13 @@ public class ClassFinder implements Runnable
 			String fullFileName = file.getAbsolutePath().replaceAll("\\\\", "/");
 			String fileName = file.getName();
 			
-			if (!matchCase)
-			{
+			if (!matchCase) {
 				fullFileName = fullFileName.toLowerCase();
 				fileName = fileName.toLowerCase();
 			}
 
 			// Direct class files
-			if (fullFileName.endsWith(".class"))
-			{
+			if (fullFileName.endsWith(".class")) {
 				// IF:
 				// Package qualifier was defined or a part of (e.g. apache.commons.Random -> apache/commons/Random)
 				// AND
@@ -255,14 +220,12 @@ public class ClassFinder implements Runnable
 				// --> CLASS FOUND!
 				if ((containsPackageQualifier && fullFileName.endsWith(classname + ".class"))
 					||
-					(!containsPackageQualifier && fileName.equals(classname + ".class")))
-				{
+					(!containsPackageQualifier && fileName.equals(classname + ".class"))) {
 					logger.log(file.getName(), file.getAbsolutePath());
 				}
 			}
 			// Direct java source file
-			else if (fullFileName.endsWith(".java"))
-			{
+			else if (fullFileName.endsWith(".java")) {
 				// IF:
 				// Package qualifier was defined or a part of (e.g. apache.commons.Random -> apache/commons/Random)
 				// AND
@@ -273,38 +236,31 @@ public class ClassFinder implements Runnable
 				// AND
 				// The FILE NAME (note the call to file.getName() rather than getAbsolutePath()) matches --> org.apache.commons.Random.java's file name is Random.java
 				// --> CLASS FOUND!
-				if ((containsPackageQualifier && fullFileName.endsWith(classname + ".java"))
+				if ((containsPackageQualifier && fullFileName.endsWith(classname + ".java")) 
 					||
-					(!containsPackageQualifier && fileName.equals(classname + ".java")))
-				{
+					(!containsPackageQualifier && fileName.equals(classname + ".java"))) {
 					logger.log(file.getName(), file.getAbsolutePath());
 				}
 			}
 			// The rest of the files: jar, war, ear, zip, rar
-			else
-			{
-				try (JarFile jarFile = new JarFile(file))
-				{
+			else {
+				try (JarFile jarFile = new JarFile(file)) {
+
 					Enumeration<JarEntry> entries = jarFile.entries();
-					while(entries.hasMoreElements())
-					{
+					while(entries.hasMoreElements()) {
 						JarEntry entry = (JarEntry) entries.nextElement();
 						String entryName = entry.getName();
-						if (!matchCase)
-						{
+						if (!matchCase) {
 							entryName = entryName.toLowerCase();
 						}
 						
-						if (containsPackageQualifier)
-						{
-							if (entryName.endsWith(classname + ".class") || entryName.endsWith(classname + ".java"))
-							{
+						if (containsPackageQualifier) {
+							if (entryName.endsWith(classname + ".class") || entryName.endsWith(classname + ".java")) {
 								logger.log(entry.getName(), file.getAbsolutePath());
 							}
 						}
 						// No package qualified, just Class Name
-						else
-						{
+						else {
 							// IF:
 							// -- 95% scenario first: Class is in a sub package of the jar file
 							// The Class name ends with "/Classname.class" OR "/Classname.java" (e.g. org.apache.commons.Random.class ends with "/Random.class")
@@ -313,15 +269,13 @@ public class ClassFinder implements Runnable
 							// The file name equals classname.class or classname.java (e.g. Random.java got zipped up into Random.zip. The only thing in there is Random.java and as no package qualifier was given, the class is found)
 							if (entryName.endsWith("/" + classname + ".class") || entryName.endsWith("/" + classname + ".java")
 								|| 
-								entryName.equals(classname + ".class") || entryName.equals(classname + ".java"))
-							{
+								entryName.equals(classname + ".class") || entryName.equals(classname + ".java")) {
 								logger.log(entry.getName(), file.getAbsolutePath());
 							}
 						}
 					}
 				}
-				catch (IOException e)
-				{
+				catch (IOException e) {
 					logger.logVerbose("Error reading file " + fullFileName + ": " + e.getMessage());
 					logger.logErr(e.getMessage());
 				}
@@ -331,31 +285,23 @@ public class ClassFinder implements Runnable
 		logger.logVerbose("Finished search");
 	}
 	
-	public void buildFileList(File directory, boolean recursive)
-	{
-		if (!directory.exists())
-		{
+	public void buildFileList(File directory, boolean recursive) {
+		if (!directory.exists()) {
 			logger.log("Directory \"" + directory.getAbsolutePath() + "\" does not exist!");
 		}
 		// File is directly passed on, no directory search necessary
-		else if (!directory.isDirectory() && new SearchableFileFilter().accept(directory))
-		{
+		else if (!directory.isDirectory() && new SearchableFileFilter().accept(directory)) {
 			files.add(directory);
 		}
-		else
-		{
-			for (File file : directory.listFiles(new SearchableFileFilter()))
-			{
+		else {
+			for (File file : directory.listFiles(new SearchableFileFilter())) {
 				// Build recursive tree if recursive flag is set
-				if (file.isDirectory())
-				{
-					if (recursive)
-					{
+				if (file.isDirectory()) {
+					if (recursive) {
 						buildFileList(file, true);
 					}
 				}
-				else
-				{
+				else {
 					files.add(file);
 				}
 			}

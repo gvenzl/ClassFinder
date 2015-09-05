@@ -5,8 +5,7 @@ package com.optit.logger;
  * @author gvenzl
  *
  */
-public class CommandLineLogger implements Logger
-{
+public class CommandLineLogger implements Logger {
 	private static long milliSecs = 0;
 	private static boolean verboseFlag = false;
 	
@@ -14,13 +13,11 @@ public class CommandLineLogger implements Logger
 	 * En- or disables verbose output
 	 * @param debug True=enable debug; False=disable debug
 	 */
-	public void setVerbose(boolean verbose)
-	{
+	public void setVerbose(boolean verbose) {
 		verboseFlag = verbose;
 	}
 	
-	public boolean getVerbose()
-	{
+	public boolean getVerbose() {
 		return verboseFlag;
 	}
 	
@@ -28,10 +25,8 @@ public class CommandLineLogger implements Logger
 	 * Logs one line into the standard output
 	 * @param line The line to log
 	 */
-	public void log(String line)
-	{
-		synchronized (System.out)
-		{
+	public void log(String line) {
+		synchronized (System.out) {
 			System.out.println(line);
 		}
 	}
@@ -40,26 +35,21 @@ public class CommandLineLogger implements Logger
 	 * Logs one line into the standard output only if verbose is enabled
 	 * @param line The line to log
 	 */
-	public void logVerbose(String line)
-	{
-		if (verboseFlag)
-		{
+	public void logVerbose(String line) {
+		if (verboseFlag) {
 			log(line);
 		}
 	}
 	
-	public void log(String className, String location)
-	{
+	public void log(String className, String location) {
 		log ("Class \"" + className + "\" found at \"" + location);
 	}
 	
 	/**
 	 * Logs a new line into the standard output
 	 */
-	public void log()
-	{
-		synchronized (System.out)
-		{
+	public void log() {
+		synchronized (System.out) {
 			System.out.println();
 		}
 	}
@@ -68,22 +58,17 @@ public class CommandLineLogger implements Logger
 	 * Logs a line into the standard output with timing set
 	 * @param line The line to log
 	 */
-	public void logTimed(String line)
-	{
-		if (milliSecs == 0)
-		{
+	public void logTimed(String line) {
+		if (milliSecs == 0) {
 			milliSecs = System.currentTimeMillis();
-			synchronized (System.out)
-			{
+			synchronized (System.out) {
 				System.out.println(line);
 			}
 		}
-		else
-		{
+		else {
 			long duration = System.currentTimeMillis()-milliSecs;
 			milliSecs = 0;
-			synchronized (System.out)
-			{
+			synchronized (System.out) {
 				System.out.println("Duration: " + duration + "ms - " + line);
 			}
 		}
@@ -93,10 +78,8 @@ public class CommandLineLogger implements Logger
 	 * Logs an error into the error output
 	 * @param line The line to log
 	 */
-	public void logErr(String line)
-	{
-		synchronized (System.err)
-		{
+	public void logErr(String line) {
+		synchronized (System.err) {
 			System.err.println(line);
 		}
 	}

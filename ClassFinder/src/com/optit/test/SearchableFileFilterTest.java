@@ -12,11 +12,9 @@ import com.optit.SearchableFileFilter;
  * @author gvenzl
  *
  */
-public class SearchableFileFilterTest extends TestCase
-{
+public class SearchableFileFilterTest extends TestCase {
 	@Test
-	public void test_accept() throws Exception
-	{
+	public void test_accept() throws Exception {
 		
 		System.out.println("Test SearchableFileFilter.accept()");
 		

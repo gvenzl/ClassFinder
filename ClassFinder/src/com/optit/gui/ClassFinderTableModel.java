@@ -9,8 +9,7 @@ import javax.swing.table.DefaultTableModel;
  * @author gvenzl
  *
  */
-public class ClassFinderTableModel extends DefaultTableModel
-{
+public class ClassFinderTableModel extends DefaultTableModel {
 	private static final long serialVersionUID = -6524244270026531200L;
 
 	public ClassFinderTableModel() {
@@ -42,8 +41,7 @@ public class ClassFinderTableModel extends DefaultTableModel
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-    public Class getColumnClass(int col)
-	{
+    public Class getColumnClass(int col) {
 		 return String.class;  
 	}
 	

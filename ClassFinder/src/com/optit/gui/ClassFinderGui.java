@@ -47,8 +47,7 @@ public class ClassFinderGui {
 	/**
 	 * Create the application.
 	 */
-	public ClassFinderGui()
-	{
+	public ClassFinderGui() {
 		try {
 			// Set system look and feel (Windows / Unix, etc.)
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -69,8 +68,7 @@ public class ClassFinderGui {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize()
-		throws HeadlessException
-	{
+		throws HeadlessException {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 640, 480);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -92,12 +90,9 @@ public class ClassFinderGui {
 		fc.setFileFilter(new SearchableFileFilter());
 		
 		JButton btnBrowse = new JButton("Browse");
-		btnBrowse.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-		        if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION)
-		        {
+		btnBrowse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+		        if (fc.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
 		        	tfJarFileFolder.setText(fc.getSelectedFile().getAbsolutePath());
 		        }
 			}
@@ -106,10 +101,8 @@ public class ClassFinderGui {
 		JButton btnSearch = new JButton("Search");
 		// Make search button default for ENTER key
 		frame.getRootPane().setDefaultButton(btnSearch);
-		btnSearch.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				performSearch();
 			}
 		});
@@ -206,26 +199,21 @@ public class ClassFinderGui {
 		frame.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{tfJarFileFolder, btnBrowse, tfClassName, chckbxMatchCase, chckbxRecursiveSearch, btnSearch}));
 	}
 	
-	private void performSearch()
-	{
+	private void performSearch() {
 		// Path is empty
-		if (tfJarFileFolder.getText().isEmpty())
-		{
+		if (tfJarFileFolder.getText().isEmpty()) {
 			JOptionPane.showMessageDialog(null, "No file or folder was specified!", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		// Path does not exist
-		else if (!new File(tfJarFileFolder.getText()).exists())
-		{
+		else if (!new File(tfJarFileFolder.getText()).exists()) {
 			JOptionPane.showMessageDialog(null, "Specified path does not exist!", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		// Class name is empty
-		else if (tfClassName.getText().isEmpty())
-		{
+		else if (tfClassName.getText().isEmpty()) {
 			JOptionPane.showMessageDialog(null, "No class name was specified!", "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		// Validation successful, run parsing
-		else
-		{
+		else {
 			statusBar.setText("Searching...");
 			tm.setRowCount(0);
 
@@ -236,19 +224,18 @@ public class ClassFinderGui {
 			params.add(tfClassName.getText());
 			params.add(Parameters.verbose);
 			
-			if (chckbxMatchCase.isSelected())
-			{
+			if (chckbxMatchCase.isSelected()) {
 				params.add(Parameters.matchCase);
 			}
 			
-			if (chckbxRecursiveSearch.isSelected())
-			{
+			if (chckbxRecursiveSearch.isSelected()) {
 				params.add(Parameters.recursiveSearch);
 			}
 			
 			ClassFinder finder = new ClassFinder(new GuiLogger(tm, statusBar));
-			if (finder.parseArguments(params.toArray(new String[] {})))
+			if (finder.parseArguments(params.toArray(new String[] {}))) {
 				new Thread(finder).start();
+			}
 		}
 	}
 }

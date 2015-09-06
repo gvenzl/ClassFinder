@@ -11,7 +11,7 @@ public class CommandLineLogger implements Logger {
 	
 	/**
 	 * En- or disables verbose output
-	 * @param debug True=enable debug; False=disable debug
+	 * @param verbose True=enable verbose output; False=disable verbose output
 	 */
 	public void setVerbose(boolean verbose) {
 		verboseFlag = verbose;
